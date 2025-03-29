@@ -1,7 +1,8 @@
 use std::{
-    collections::{HashMap, HashSet},
-    fs::{File, OpenOptions},
-    io::{self, BufRead, BufReader, Write},
+    collections::HashMap,
+    fs::{self, File},
+    io::{self, BufRead, BufReader},
+    path::PathBuf,
 };
 
 const DATAFILE: &str = "database/datafile.txt";
@@ -12,58 +13,57 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new() -> Database {
+    pub fn new() -> Self {
         let urls = HashMap::from([(String::from(""), String::from("404.html"))]);
-        Database { urls }
+        Self { urls }
     }
-    pub fn get(&self, key: &str) -> &str {
-        self.urls.get(key).map(String::as_str).unwrap()
-    }
-    ///update the url hashmap to include any new paths in the data base
-    pub fn update_urls(&mut self) -> io::Result<()> {
-        let datafile = File::open(DATAFILE)?;
-
-        let reader = BufReader::new(datafile);
-        for line in reader.lines() {
-            let line = line?;
-            let mut kv = line.split_whitespace();
-
-            // Extract the key and value from the iterator
-            if let (Some(key), Some(value)) = (kv.next(), kv.next()) {
-                if self.urls.contains_key(key) {
-                    continue;
-                }
-                self.urls.insert(key.to_string(), value.to_string());
-            } else {
-                // Handle malformed lines (e.g., lines without both key and value)
-                eprintln!("Malformed line: {}", line);
-            }
-        }
-
-        Ok(())
+    pub fn get(&self, url: &str) -> &str {
+        self.urls
+            .get(url)
+            .unwrap_or_else(|| self.urls.get("").unwrap())
     }
     ///add a file path to the database file which contains urls for the
     ///websites in that path
-    pub fn add(path: &str) -> io::Result<()> {
-        let urlsfile = File::open(path)?;
-        let reader = BufReader::new(urlsfile);
+    ///todo update to handle paths without url.txt files
+    pub fn add(&mut self, path: &str) -> io::Result<()> {
+        let target = "urls.txt";
+        for entry in fs::read_dir(path)? {
+            let entry = entry?;
+            let path = entry.path();
 
-        let datafile = OpenOptions::new()
-            .append(true)
-            .create(true)
-            .open(DATAFILE)?;
+            if path.is_file() && path.file_name().map(|name| name == target).unwrap_or(false) {
+                return self.add_from_urlsfile(path);
+            }
+        }
+        self.add_from_path(path)
+    }
 
-        let existing_lines: HashSet<String> = {
-            let datafile_reader = BufReader::new(File::open(DATAFILE)?);
-            datafile_reader.lines().map_while(Result::ok).collect()
-        };
-        for line in reader.lines() {
+    fn add_from_urlsfile(&mut self, file: PathBuf) -> io::Result<()> {
+        let urlsfile = File::open(file)?;
+
+        for line in BufReader::new(urlsfile).lines() {
             let line = line?;
-            if !existing_lines.contains(&line) {
-                writeln!(&datafile, "{}", line)?
+            let mut kv = line.split_whitespace();
+
+            if let (Some(k), Some(v)) = (kv.next(), kv.next()) {
+                if !self.contains(k) {
+                    self.urls.insert(k.to_string(), v.to_string());
+                }
+            } else {
+                eprintln!("line can not be turned a url and a path {line}");
             }
         }
         Ok(())
     }
+    fn add_from_path(&self, path: &str) -> io::Result<()> {
+        Ok(())
+    }
     pub fn remove(&self, path: &str) {}
+    pub fn contains(&self, url: &str) -> bool {
+        self.urls.contains_key(url)
+    }
+    ///clears the data file
+    pub fn clear() {}
+    pub fn save(&self) {}
+    pub fn load(&self) {}
 }

@@ -1,6 +1,7 @@
 use server::Server;
 
 fn main() {
-    let s = Server::new();
+    let mut s = Server::new();
+    let _ = s.database.add("example");
     s.run();
 }

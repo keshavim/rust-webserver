@@ -10,14 +10,13 @@ const ADDRESS: &str = "127.0.0.1:7878";
 
 #[derive(Default)]
 pub struct Server {
-    database: Database,
+    pub database: Database,
 }
 
 impl Server {
-    pub fn new() -> Server {
-        let mut database = Database::new();
-        let _ = database.update_urls();
-        Server { database }
+    pub fn new() -> Self {
+        let database = Database::new();
+        Self { database }
     }
     pub fn run(&self) {
         let listener = TcpListener::bind(ADDRESS).unwrap();
