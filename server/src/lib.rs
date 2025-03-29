@@ -31,14 +31,16 @@ impl Server {
     fn get_file_from_status(&self, status: &str) -> (&'static str, &str) {
         let request = status
             .split_whitespace()
-            .find(|&s| s.starts_with("/") && s.ne("/favicon.ico"))
-            .unwrap_or("");
-        let status = if request.is_empty() {
+            .find(|&s| s.starts_with("/") && s.ne("/favicon.ico"));
+
+        let status = if request.is_some() {
             "HTTP/1.1 200 404 NOT FOUND"
         } else {
             "HTTP/1.1 200 OK"
         };
-        (status, self.database.get(request))
+        eprintln!("{request:#?}");
+
+        (status, self.database.get(request.unwrap_or("")))
     }
     ///reads a tcpstream and returns the webpage requested
     ///currently only returns a html file
