@@ -15,7 +15,8 @@ pub struct Server {
 
 impl Server {
     pub fn new() -> Self {
-        let database = Database::new();
+        let mut database = Database::new();
+        let _ = database.load();
         Self { database }
     }
     pub fn run(&self) {
@@ -38,7 +39,6 @@ impl Server {
         } else {
             "HTTP/1.1 200 OK"
         };
-        eprintln!("{request:#?}");
 
         (status, self.database.get(request.unwrap_or("")))
     }

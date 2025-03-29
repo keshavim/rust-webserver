@@ -2,5 +2,3 @@
 /page1       example/page1.html
 /page1/page2 example/page2.html
 /page3       example/page3.html
-/page4       example/page4.html
-/page5       example/page5.html

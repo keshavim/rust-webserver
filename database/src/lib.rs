@@ -1,11 +1,11 @@
 use std::{
     collections::HashMap,
-    fs::{self, File},
-    io::{self, BufRead, BufReader},
+    fs::{self, File, OpenOptions},
+    io::{self, BufRead, BufReader, Write},
     path::PathBuf,
 };
 
-const DATAFILE: &str = "database/datafile.txt";
+const DATAFILE: &str = "database/urls.txt";
 
 #[derive(Default)]
 pub struct Database {
@@ -89,6 +89,53 @@ impl Database {
     pub fn clear(&mut self) {
         self.urls.clear();
     }
-    pub fn save(&self) {}
-    pub fn load(&self) {}
+    pub fn save(&self) -> io::Result<()> {
+        let mut file_map = HashMap::new();
+        if let Ok(file) = File::open(DATAFILE) {
+            let reader = BufReader::new(file);
+            for line in reader.lines() {
+                let line = line?;
+                if let Some((key, value)) = line.split_once('=') {
+                    file_map.insert(key.to_string(), value.to_string());
+                }
+            }
+        }
+
+        // Update the file_map with only new or changed entries from the input hashmap
+        for (key, value) in &self.urls {
+            if file_map.get(key) != Some(value) {
+                // Only update if the value is different or does not exist
+                file_map.insert(key.clone(), value.clone());
+            }
+        }
+
+        // Remove entries from file_map that are not in the new hashmap
+        file_map.retain(|key, _| self.urls.contains_key(key));
+
+        // Write updated data back to the file
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(DATAFILE)?;
+
+        for (key, value) in &file_map {
+            writeln!(file, "{}={}", key, value)?;
+        }
+
+        Ok(())
+    }
+    pub fn load(&mut self) -> io::Result<()> {
+        self.urls = HashMap::new();
+        if let Ok(file) = File::open(DATAFILE) {
+            let reader = BufReader::new(file);
+            for line in reader.lines() {
+                let line = line?;
+                if let Some((key, value)) = line.split_once('=') {
+                    self.urls.insert(key.to_string(), value.to_string());
+                }
+            }
+        }
+        Ok(())
+    }
 }
