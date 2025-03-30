@@ -15,8 +15,7 @@ pub struct Server {
 
 impl Server {
     pub fn new() -> Self {
-        let mut database = Database::new();
-        let _ = database.load();
+        let database = Database::load();
         Self { database }
     }
     pub fn run(&self) {

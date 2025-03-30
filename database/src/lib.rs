@@ -54,7 +54,7 @@ impl Database {
                 eprintln!("line can not be turned a url and a path {line}");
             }
         }
-        Ok(())
+        self.save()
     }
     pub fn remove(&mut self, path: &str) -> io::Result<()> {
         let target = "urls.txt";
@@ -80,14 +80,15 @@ impl Database {
                 self.urls.remove(k);
             }
         }
-        Ok(())
+        self.save()
     }
     pub fn contains(&self, url: &str) -> bool {
         self.urls.contains_key(url)
     }
     ///clears the data base
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> io::Result<()> {
         self.urls.clear();
+        self.save()
     }
     pub fn save(&self) -> io::Result<()> {
         let mut file_map = HashMap::new();
@@ -110,7 +111,7 @@ impl Database {
         }
 
         // Remove entries from file_map that are not in the new hashmap
-        file_map.retain(|key, _| self.urls.contains_key(key));
+        file_map.retain(|key, _| self.contains(key));
 
         // Write updated data back to the file
         let mut file = OpenOptions::new()
@@ -125,17 +126,31 @@ impl Database {
 
         Ok(())
     }
-    pub fn load(&mut self) -> io::Result<()> {
-        self.urls = HashMap::new();
+    pub fn load() -> Database {
+        let mut urls = HashMap::new();
         if let Ok(file) = File::open(DATAFILE) {
             let reader = BufReader::new(file);
             for line in reader.lines() {
-                let line = line?;
+                let line = line.unwrap();
                 if let Some((key, value)) = line.split_once('=') {
-                    self.urls.insert(key.to_string(), value.to_string());
+                    urls.insert(key.to_string(), value.to_string());
                 }
             }
         }
-        Ok(())
+        Database { urls }
+    }
+    pub fn refresh(&mut self) {
+        *self = Database::load();
+    }
+
+    pub fn help() {
+        println!("valid arguments");
+        println!(
+            "add [file path] - adds urls from urls.txt in to the database\n
+                               [file path] must contain a urls.txt and html files"
+        );
+        println!("remove [file path] - removes all urls from [file path]/urls.txt");
+        println!("clear - removes all urls from the database");
+        println!("help - shows this message");
     }
 }
