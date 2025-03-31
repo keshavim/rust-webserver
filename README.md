@@ -15,6 +15,7 @@ then cd into the main workspace
 to run server
 
 `cargo run` or `cargo run -p server`
+
 by default server will use the ip address 127.0.0.1:8080
 to uses a different ip address
 `cargo run -- [address]` or `cargo run -p server [address]`
@@ -33,6 +34,7 @@ add path, remove path, clear, and help
 add and remove can include multiple paths at once.
 
 path is a directory that contains html files and a urls.txt.
+
 urls.txt should contain the url on the left side and the path to html file on the right with whitespace to seperate.
 look at the example folder
 
