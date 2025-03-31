@@ -10,3 +10,4 @@ path = "src/main.rs"
 
 [dependencies]
 database = {path = "../database"}
+thread_pool = {path = "../thread_pool"}

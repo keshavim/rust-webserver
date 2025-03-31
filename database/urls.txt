@@ -1,5 +1,6 @@
-/=example/hello.html
 /page3=example/page3.html
 =404.html
 /page1=example/page1.html
 /page1/page2=example/page2.html
+/slow=example/hello_slow.html
+/=example/hello.html

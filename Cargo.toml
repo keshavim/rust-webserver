@@ -3,8 +3,9 @@
 members = [
 "server",
 "database",
+"thread_pool"
 ]
 default-members = ["server"]
-resolver = "2"
+resolver = "3"
 
 

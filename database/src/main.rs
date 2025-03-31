@@ -7,15 +7,17 @@ fn main() {
 
     let mut database = Database::load();
     if args[1] == "add" {
-        let path = &args[2];
-        let _ = database
-            .add(path)
-            .inspect_err(|e| eprintln!("failed to add {path}: {e} "));
+        for path in args.iter().skip(2) {
+            let _ = database
+                .add(path)
+                .inspect_err(|e| eprintln!("failed to add {path}: {e} "));
+        }
     } else if args[1] == "remove" {
-        let path = &args[2];
-        let _ = database
-            .remove(path)
-            .inspect_err(|e| eprintln!("failed to add {path}: {e} "));
+        for path in args.iter().skip(2) {
+            let _ = database
+                .remove(path)
+                .inspect_err(|e| eprintln!("failed to add {path}: {e} "));
+        }
     } else if args[1] == "clear" {
         let _ = database
             .clear()
@@ -28,6 +30,4 @@ fn main() {
         eprintln!("invalid args\n");
         Database::help();
     }
-
-    println!("hello");
 }

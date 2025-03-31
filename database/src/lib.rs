@@ -63,7 +63,7 @@ impl Database {
             let path = entry.path();
 
             if path.is_file() && path.file_name().map(|name| name == target).unwrap_or(false) {
-                let _ = self.remove_from_urlsfile(path);
+                return self.remove_from_urlsfile(path);
             }
         }
         eprintln!("could not find urls.txt file");
@@ -146,10 +146,11 @@ impl Database {
     pub fn help() {
         println!("valid arguments");
         println!(
-            "add [file path] - adds urls from urls.txt in to the database\n
-                               [file path] must contain a urls.txt and html files"
+            "--add paths... - adds urls from the paths given. paths must contain a url.txt file"
         );
-        println!("remove [file path] - removes all urls from [file path]/urls.txt");
+        println!(
+            "remove paths... - removes urls from the [paths] given, paths must contain a url.txt file"
+        );
         println!("clear - removes all urls from the database");
         println!("help - shows this message");
     }
