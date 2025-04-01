@@ -1,6 +1,11 @@
-/page3=example/page3.html
+/example1.hom/page3/page4=example1/page4.html
+/example1.hom/page1=example1/page1.html
+/example1.hom=example1/hello.html
+/example2.hom/page2=example2/page2.html
+/example1.hom/page3=example1/page3.html
 =404.html
-/page1=example/page1.html
-/page1/page2=example/page2.html
-/slow=example/hello_slow.html
-/=example/hello.html
+/example1.hom/page1/page2=example1/page2.html
+/example2.hom/page1/page3=example2/page3.html
+/example2.hom/page2/page4=example2/page4.html
+/example2.hom=example2/hello.html
+/example2.hom/page1=example2/page1.html

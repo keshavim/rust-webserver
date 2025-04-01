@@ -1,0 +1,5 @@
+/example2.hom             example2/hello.html
+/example2.hom/page1       example2/page1.html
+/example2.hom/page2       example2/page2.html
+/example2.hom/page1/page3       example2/page3.html
+/example2.hom/page2/page4       example2/page4.html

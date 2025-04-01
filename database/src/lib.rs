@@ -18,9 +18,7 @@ impl Database {
         Self { urls }
     }
     pub fn get(&self, url: &str) -> &str {
-        self.urls
-            .get(url)
-            .unwrap_or_else(|| self.urls.get("").unwrap())
+        self.urls.get(url).unwrap()
     }
     ///add a file path to the database file which contains urls for the
     ///websites in that path
@@ -88,6 +86,7 @@ impl Database {
     ///clears the data base
     pub fn clear(&mut self) -> io::Result<()> {
         self.urls.clear();
+        self.urls.insert(String::from(""), String::from("404.html"));
         self.save()
     }
     pub fn save(&self) -> io::Result<()> {
